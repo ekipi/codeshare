@@ -11,12 +11,15 @@ io.on('connection', (socket) => {
     console.log(`${client_id} connected`);
     // once a client has connected, get the session id from client
     let session = ''
-    socket.on('sessionId', (sessionId) => {
+    socket.on('session', (sessionId) => {
+        console.log(`Session ID is ${sessionId}`)
         socket.join(sessionId);
         session = sessionId;
     });
-    socket.on('text', (text) => {
-        io.sockets.in(session).emit('text', text);
+    socket.on('content', (content) => {
+        console.log("Text received ::: " + content)
+        console.log("Session id: " + session);
+        io.sockets.in(session).emit('content', content);
     })
     //Upon disconnection, display a message in the log
     socket.on('disconnect', () => {
