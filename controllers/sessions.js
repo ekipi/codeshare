@@ -11,7 +11,6 @@ router.get('/allsessions', (req, res) => {
 })
 
 router.get('/session/:id', (req, res) => {
-    console.log('coming into get session by id...')
     const collection = db.get().collection('sessions')
     collection.findOne({
         '_id': ObjectID(req.params.id)
@@ -21,7 +20,6 @@ router.get('/session/:id', (req, res) => {
 })
 
 router.post('/createSession', (req, res) => {
-    console.log('coming into createSession...')
     const collection = db.get().collection('sessions')
     let sessionObject = req.body;
     console.log(req.body);
