@@ -1,29 +1,34 @@
-var MongoClient = require('mongodb').MongoClient
+const MongoClient = require('mongodb').MongoClient
+const globals = require('../globals')
 
-var state = {
-    db: null,
-}
 
-exports.connect = function (url, done) {
-    if (state.db) return done()
-
-    MongoClient.connect(url,{ useNewUrlParser: true }, function (err, client) {
+let connect = (url, done) => {
+    if (globals.CONNECTION.db) return done()
+    MongoClient.connect(url, {
+        useNewUrlParser: true
+    }, (err, client) => {
         if (err) return done(err)
-        state.db = client.db('ekipi_local')
+        globals.CONNECTION.db = client.db('ekipi_local')
         done()
     })
 }
 
-exports.get = function () {
-    return state.db
+let get = () => {
+    return globals.CONNECTION.db
 }
 
-exports.close = function (done) {
-    if (state.db) {
-        state.db.close(function (err, result) {
-            state.db = null
-            state.mode = null
+let close = (done) => {
+    if (globals.CONNECTION.db) {
+        globals.CONNECTION.db.close((err, result) => {
+            globals.CONNECTION.db = null
+            globals.CONNECTION.mode = null
             done(err)
         })
     }
+}
+
+module.exports = {
+    connect,
+    get,
+    close
 }

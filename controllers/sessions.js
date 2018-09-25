@@ -1,18 +1,30 @@
-const express = require('express'),
-    router = express.Router()
-
+const express = require('express')
+const router = express.Router()
 const db = require('../dbs')
+const ObjectID = require('mongodb').ObjectID
 
-router.get('/allsessions', function (req, res) {
+router.get('/allsessions', (req, res) => {
     const collection = db.get().collection('sessions')
-    collection.find().toArray(function (err, docs) {
+    collection.find().toArray((err, docs) => {
+        res.json(docs);
+    })
+})
+
+router.get('/session/:id', (req, res) => {
+    console.log('coming into get session by id...')
+    const collection = db.get().collection('sessions')
+    collection.findOne({
+        '_id': ObjectID(req.params.id)
+    }, (err, docs) => {
         res.json(docs);
     })
 })
 
 router.post('/createSession', (req, res) => {
+    console.log('coming into createSession...')
     const collection = db.get().collection('sessions')
-    let sessionObject = req.body.sessionObject;
+    let sessionObject = req.body;
+    console.log(req.body);
     collection.insertOne(sessionObject, (err, docs) => {
         if (err) {
             res.json(err)
@@ -21,17 +33,5 @@ router.post('/createSession', (req, res) => {
         }
     })
 })
-
-/* router.get('/recent', function (req, res) {
-    const collection = db.get().collection('comments')
-
-    collection.find().sort({
-        'date': -1
-    }).limit(100).toArray(function (err, docs) {
-        res.render('comments', {
-            comments: docs
-        })
-    })
-}) */
 
 module.exports = router
