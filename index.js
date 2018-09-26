@@ -5,6 +5,7 @@ const io = require('socket.io')(server);
 const db = require('./dbs')
 const bodyParser = require('body-parser');
 const globals = require('./globals')
+const ObjectID = require('mongodb').ObjectID
 
 const PORT = process.env.PORT || 4200;
 
@@ -34,6 +35,20 @@ io.on('connection', (socket) => {
     });
     socket.on('content', (content) => {
         console.log("Session id: " + session);
+        const collection = db.get().collection('sessions')
+        collection.updateOne({
+            '_id': ObjectID(session)
+        }, {
+            $set: {
+                content: content
+            }
+        }, (err, docs) => {
+            if (err) {
+                console.log(err)
+            } else {
+               console.log('updated')
+            }
+        })
         io.sockets.in(session).emit('content', content);
     })
     //Upon disconnection, display a message in the log
