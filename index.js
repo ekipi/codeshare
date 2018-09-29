@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const globals = require('./globals')
 const ObjectID = require('mongodb').ObjectID
 
-const PORT = process.env.PORT || 4200;
+const PORT = process.env.PORT || globals.PORT;
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
     });
 })
 
-db.connect(globals.DB_URL, (err) => {
+db.connect(globals.DB_URL+globals.DBNAME, (err) => {
     if (err) {
         console.log('Unable to connect to Mongo.')
         process.exit(1)
