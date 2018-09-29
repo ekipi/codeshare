@@ -8,7 +8,7 @@ let connect = (url, done) => {
         useNewUrlParser: true
     }, (err, client) => {
         if (err) return done(err)
-        globals.CONNECTION.db = client.db('ekipi_local')
+        globals.CONNECTION.db = client.db(globals.DBNAME);
         done()
     })
 }
