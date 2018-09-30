@@ -3,6 +3,10 @@ module.exports = Object.freeze({
     CONNECTION: {
         db: null,
     },
-    DBNAME : "ekipi_local",
-    PORT: 4201
+    DBNAME: "ekipi_local",
+    PORT: 4201,
+    CONTACT_EMAIL: "ctapaltech@gmail.com",
+    CONTACT_EMAIL_PASSWORD: "Ekipi2018",
+    EMAIL_SERVICE: "Gmail",
+    EMAIL_SUBJECT: "Customer Message",
 });

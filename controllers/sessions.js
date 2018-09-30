@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const db = require('../dbs')
 const ObjectID = require('mongodb').ObjectID
+const globals = require('../globals')
+const sendEmail = require('../send-email');
 
 router.get('/allsessions', (req, res) => {
     const collection = db.get().collection('sessions')
@@ -30,6 +32,10 @@ router.post('/createSession', (req, res) => {
             res.json(docs.ops[0]);
         }
     })
+})
+
+router.post('/contactMessage', (req, res) => {
+    sendEmail(req.body.email, globals.CONTACT_EMAIL, globals.EMAIL_SUBJECT, req.body.content);
 })
 
 module.exports = router
