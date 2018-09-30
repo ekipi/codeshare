@@ -10,7 +10,7 @@ const transport = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 });
-let sendEmail = (from, to, subject, message) => {
+let sendEmail = (from, to, subject, message, res) => {
     const mailOptions = {
         from: from,
         to: to,
@@ -20,6 +20,8 @@ let sendEmail = (from, to, subject, message) => {
     transport.sendMail(mailOptions, (error) => {
         if (error) {
             console.log(error);
+        }else{
+            res.json("Success")
         }
     });
 };

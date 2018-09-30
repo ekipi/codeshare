@@ -35,7 +35,7 @@ router.post('/createSession', (req, res) => {
 })
 
 router.post('/contactMessage', (req, res) => {
-    sendEmail(req.body.email, globals.CONTACT_EMAIL, globals.EMAIL_SUBJECT, req.body.content);
+    sendEmail(req.body.email, globals.CONTACT_EMAIL, globals.EMAIL_SUBJECT, req.body.content, res);
 })
 
 module.exports = router
