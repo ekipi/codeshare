@@ -6,6 +6,8 @@ const db = require('./dbs')
 const bodyParser = require('body-parser');
 const globals = require('./globals')
 const ObjectID = require('mongodb').ObjectID
+const morgan = require('morgan');
+const logger = require('./logger');
 
 const PORT = process.env.PORT || globals.PORT;
 
@@ -14,6 +16,20 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+app.use(morgan('common', {
+    skip: function (req, res) {
+        return res.statusCode < 400
+    },
+    stream: process.stderr
+}));
+
+app.use(morgan('common', {
+    skip: function (req, res) {
+        return res.statusCode >= 400
+    },
+    stream: process.stdout
+}));
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({
@@ -25,16 +41,16 @@ app.use('/api', require('./controllers/sessions'))
 
 io.on('connection', (socket) => {
     let client_id = socket.id
-    console.log(`${client_id} connected`);
+    logger.info(`${client_id} connected`);
     // once a client has connected, get the session id from client
     let session = ''
     socket.on('session', (sessionId) => {
-        console.log(`Session ID is ${sessionId}`)
+        logger.info(`Session ID is ${sessionId}`);
         socket.join(sessionId);
         session = sessionId;
     });
     socket.on('content', (content) => {
-        console.log("Session id: " + session);
+        logger.info(`Session id is ${session}`);
         const collection = db.get().collection('sessions')
         collection.updateOne({
             '_id': ObjectID(session)
@@ -44,26 +60,26 @@ io.on('connection', (socket) => {
             }
         }, (err, docs) => {
             if (err) {
-                console.log(err)
+                logger.error(`${err}`);
             } else {
-               console.log('updated')
+                logger.info(`Data with session id ${session} is updated with the latest editor content.`);
             }
         })
         io.sockets.in(session).emit('content', content);
     })
     //Upon disconnection, display a message in the log
     socket.on('disconnect', () => {
-        console.log(`${client_id} disconnected`);
+        logger.info(`${client_id} disconnected`);
     });
 })
 
-db.connect(globals.DB_URL+globals.DBNAME, (err) => {
+db.connect(globals.DB_URL + globals.DBNAME, (err) => {
     if (err) {
-        console.log('Unable to connect to Mongo.')
+        logger.error(`Unable to connect to Mongo. Reason: ${err}`);
         process.exit(1)
     } else {
         server.listen(PORT, () => {
-            console.log(`Server is listening on port ${PORT}`)
+            logger.info(`Server is listening on port ${PORT}`)
         })
     }
 })
