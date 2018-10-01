@@ -8,6 +8,7 @@ const globals = require('./globals')
 const ObjectID = require('mongodb').ObjectID
 const morgan = require('morgan');
 const logger = require('./logger');
+const path = require('path');
 
 const PORT = process.env.PORT || globals.PORT;
 
@@ -36,6 +37,12 @@ app.use(bodyParser.urlencoded({
     extended: true
 })); // support encoded bodies
 app.use(express.static(__dirname + '/node_modules'));
+app.use(express.static(__dirname + '/dist'));
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/dist/ekipi-client/index.html'));
+});
+
 app.use('/api', require('./controllers/sessions'))
 
 
