@@ -2,8 +2,6 @@ const express = require('express')
 const router = express.Router()
 const db = require('../dbs')
 const ObjectID = require('mongodb').ObjectID
-const globals = require('../globals')
-const sendEmail = require('../send-email');
 
 router.get('/allsessions', (req, res) => {
     const collection = db.get().collection('sessions')
@@ -34,8 +32,23 @@ router.post('/createSession', (req, res) => {
     })
 })
 
+router.get('/contactMessages', (req, res) => {
+    const collection = db.get().collection('messages')
+    collection.find().toArray((err, docs) => {
+        res.json(docs);
+    })
+})
+
 router.post('/contactMessage', (req, res) => {
-    sendEmail(req.body.email, globals.CONTACT_EMAIL, globals.EMAIL_SUBJECT, req.body.content, res);
+    const collection = db.get().collection('messages')
+    let messagesObject = req.body;
+    collection.insertOne(messagesObject, (err, docs) => {
+        if (err) {
+            res.json(err)
+        } else {
+            res.json(docs.ops[0]);
+        }
+    })
 })
 
 module.exports = router
