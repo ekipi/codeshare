@@ -37,10 +37,10 @@ app.use(bodyParser.urlencoded({
     extended: true
 })); // support encoded bodies
 app.use(express.static(__dirname + '/node_modules'));
-app.use(express.static(__dirname + '/dist'));
+app.use(express.static(__dirname + '/dist/' ));
 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/dist/ekipi-client/index.html'));
+    res.sendFile(path.join(__dirname + '/dist/index.html'));
 });
 
 app.use('/api', require('./controllers/sessions'))
