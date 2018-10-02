@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../dbs')
 const ObjectID = require('mongodb').ObjectID
+const shortid = require('shortid');
 
 router.get('/allsessions', (req, res) => {
     const collection = db.get().collection('sessions')
@@ -13,7 +14,8 @@ router.get('/allsessions', (req, res) => {
 router.get('/session/:id', (req, res) => {
     const collection = db.get().collection('sessions')
     collection.findOne({
-        '_id': ObjectID(req.params.id)
+        // '_id': ObjectID(req.params.id) -- commented for short id
+        '_id': req.params.id
     }, (err, docs) => {
         res.json(docs);
     })
@@ -22,14 +24,14 @@ router.get('/session/:id', (req, res) => {
 router.post('/createSession', (req, res) => {
     const collection = db.get().collection('sessions')
     let sessionObject = req.body;
-    console.log(req.body);
-    collection.insertOne(sessionObject, (err, docs) => {
-        if (err) {
-            res.json(err)
-        } else {
-            res.json(docs.ops[0]);
-        }
-    })
+    sessionObject._id = shortid.generate(),
+        collection.insertOne(sessionObject, (err, docs) => {
+            if (err) {
+                res.json(err)
+            } else {
+                res.json(docs.ops[0]);
+            }
+        })
 })
 
 router.get('/contactMessages', (req, res) => {
