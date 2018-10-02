@@ -3,6 +3,7 @@ const router = express.Router()
 const db = require('../dbs')
 const ObjectID = require('mongodb').ObjectID
 const shortid = require('shortid');
+const logger = require('../logger');
 
 router.get('/allsessions', (req, res) => {
     const collection = db.get().collection('sessions')
@@ -17,7 +18,11 @@ router.get('/deleteSessions', (req, res) => {
     let deleteCounter = 0;
     date.setDate(date.getDate() - 1);
     collection.find({}).forEach(function (session) {
-        if (new Date(session.createdDate) < date) {
+
+        let timeDiff = Math.abs(new Date(session.createdDate) - date);
+        let diffHours = Math.ceil(timeDiff / (1000 * 3600));
+        logger.info(`Difference in hours is ${diffHours}`)
+        if (diffHours > 24) {
             try {
                 collection.deleteOne({
                     "_id": session._id
