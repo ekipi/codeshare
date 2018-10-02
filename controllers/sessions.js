@@ -11,6 +11,27 @@ router.get('/allsessions', (req, res) => {
     })
 })
 
+router.get('/deleteSessions', (req, res) => {
+    const collection = db.get().collection('sessions')
+    const date = new Date();
+    let deleteCounter = 0;
+    date.setDate(date.getDate() - 1);
+    collection.find({}).forEach(function (session) {
+        if (new Date(session.createdDate) < date) {
+            try {
+                collection.deleteOne({
+                    "_id": session._id
+                });
+                deleteCounter++;
+            } catch (e) {
+                res.json(`Error in deleting ${e}`)
+            }
+        }
+    }, (err, docs) => {
+        res.json(`Deleted ${deleteCounter} documents`);
+    })
+})
+
 router.get('/session/:id', (req, res) => {
     const collection = db.get().collection('sessions')
     collection.findOne({
