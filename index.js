@@ -60,7 +60,8 @@ io.on('connection', (socket) => {
         logger.info(`Session id is ${session}`);
         const collection = db.get().collection('sessions')
         collection.updateOne({
-            '_id': ObjectID(session)
+            // '_id': ObjectID(session) -- comented for shortid
+            '_id': session
         }, {
             $set: {
                 content: content
