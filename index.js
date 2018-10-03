@@ -9,6 +9,7 @@ const ObjectID = require('mongodb').ObjectID
 const morgan = require('morgan');
 const logger = require('./logger');
 const path = require('path');
+const cron = require('node-cron');
 
 const PORT = process.env.PORT || globals.PORT;
 
@@ -16,6 +17,32 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
+});
+
+cron.schedule('0 0 */2 * * *', () => {
+    logger.info(`running a task to delete old sessions every two hours`);
+    const collection = db.get().collection('sessions')
+    const date = new Date();
+    let deleteCounter = 0;
+    date.setDate(date.getDate() - 1);
+    collection.find({}).forEach(function (session) {
+
+        let timeDiff = Math.abs(new Date(session.createdDate) - date);
+        let diffHours = Math.ceil(timeDiff / (1000 * 3600));
+        logger.info(`Difference in hours is ${diffHours}`)
+        if (diffHours > 24) {
+            try {
+                collection.deleteOne({
+                    "_id": session._id
+                });
+                deleteCounter++;
+            } catch (e) {
+                logger.info(`Error in deleting ${e}`)
+            }
+        }
+    }, (err, docs) => {
+        logger.info(`Deleted ${deleteCounter} documents`);
+    })
 });
 
 app.use(morgan('common', {
@@ -37,9 +64,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 })); // support encoded bodies
 app.use(express.static(__dirname + '/node_modules'));
-app.use(express.static(__dirname + '/dist/' ));
+app.use(express.static(__dirname + '/dist/'));
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/dist/index.html'));
 });
 

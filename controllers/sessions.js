@@ -12,7 +12,7 @@ router.get('/allsessions', (req, res) => {
     })
 })
 
-router.get('/deleteSessions', (req, res) => {
+/* router.get('/deleteSessions', (req, res) => {
     const collection = db.get().collection('sessions')
     const date = new Date();
     let deleteCounter = 0;
@@ -35,7 +35,7 @@ router.get('/deleteSessions', (req, res) => {
     }, (err, docs) => {
         res.json(`Deleted ${deleteCounter} documents`);
     })
-})
+}) */
 
 router.get('/session/:id', (req, res) => {
     const collection = db.get().collection('sessions')
