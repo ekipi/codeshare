@@ -9,6 +9,13 @@ let logger = winston.createLogger({
             timestamp: function () {
                 return (new Date()).toISOString();
             }
+        }),
+        new winston.transports.File({
+            filename: 'error.log',
+            level: 'error'
+        }),
+        new winston.transports.File({
+            filename: 'combined.log'
         })
     ]
 });
