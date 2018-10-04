@@ -19,7 +19,7 @@ app.use((req, res, next) => {
     next();
 });
 
-cron.schedule('0 0 */2 * * *', () => {
+cron.schedule('0 */2 * * *', () => { //credits to https://crontab.guru/
     logger.info(`running a task to delete old sessions every two hours`);
     const collection = db.get().collection('sessions')
     const date = new Date();
@@ -37,7 +37,7 @@ cron.schedule('0 0 */2 * * *', () => {
                 });
                 deleteCounter++;
             } catch (e) {
-                logger.info(`Error in deleting ${e}`)
+                logger.error(`Error in deleting ${e}`)
             }
         }
     }, (err, docs) => {
